@@ -1,0 +1,27 @@
+Description: Recipe description
+Identifier: com.github.wegotoeleven-recipes.download.VirtualBuddy
+MinimumVersion: '2.3'
+
+Input:
+  NAME: VirtualBuddy
+  GITHUB_REPO: insidegui/VirtualBuddy
+  INCLUDE_PRERELEASES: "false"
+
+Process:
+
+- Processor: GitHubReleasesInfoProvider
+  Arguments:
+    asset_regex: ^VirtualBuddy.*?dmg$
+    github_repo: "%GITHUB_REPO%"
+    include_prereleases: "%INCLUDE_PRERELEASES%"
+  
+- Processor: URLDownloader
+  Arguments:
+    filename: "%NAME%.dmg"
+
+- Processor: EndOfCheckPhase
+
+- Processor: CodeSignatureVerifier
+  Arguments:
+    input_path: "%RECIPE_CACHE_DIR%/downloads/%NAME%.dmg/VirtualBuddy.app"
+    requirement: anchor apple generic and identifier "codes.rambo.VirtualBuddy" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "8C7439RJLG")
