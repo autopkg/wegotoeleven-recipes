@@ -1,0 +1,31 @@
+Description: Downloads the version of Tart.
+Identifier: com.github.wegotoeleven-recipes.download.Tart
+MinimumVersion: '2.3'
+
+Input:
+  NAME: Tart
+  GITHUB_REPO: cirruslabs/tart
+  INCLUDE_PRERELEASES:
+
+Process:
+
+- Processor: GitHubReleasesInfoProvider
+  Arguments:
+    asset_regex: ^Tart.*?pkg$
+    github_repo: "%GITHUB_REPO%"
+    include_prereleases: "%INCLUDE_PRERELEASES%"
+
+- Processor: URLDownloader
+
+- Processor: EndOfCheckPhase
+
+- Processor: CodeSignatureVerifier
+  Arguments:
+    input_path: '%pathname%'
+    expected_authority_names:
+      - "Developer ID Installer: Fedor Korotkov (9M2P8L4D89)"
+      - Developer ID Certification Authority
+      - Apple Root CA
+
+
+  
