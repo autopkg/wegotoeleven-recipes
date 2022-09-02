@@ -1,4 +1,4 @@
-Description: Downloads the version of Tart.
+Description: Downloads the latest version of Tart from Github.
 Identifier: com.github.wegotoeleven-recipes.download.Tart
 MinimumVersion: '2.3'
 
