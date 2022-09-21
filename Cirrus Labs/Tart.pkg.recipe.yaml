@@ -1,0 +1,34 @@
+Description: Downloads the latest version of Tart from Github; pulls apart the package and checks the binary's code 
+  signature
+Identifier: com.github.wegotoeleven-recipes.pkg.Tart
+MinimumVersion: '2.3'
+ParentRecipe: com.github.wegotoeleven-recipes.download.Tart
+
+Input:
+
+  NAME: Tart
+  GITHUB_REPO: cirruslabs/tart
+  INCLUDE_PRERELEASES: "false"
+
+Process:
+
+- Processor: FlatPkgUnpacker
+  Arguments:
+    flat_pkg_path: "%pathname%"
+    destination_path: "%RECIPE_CACHE_DIR%/unpack"
+
+- Processor: PkgPayloadUnpacker
+  Arguments:
+    pkg_payload_path: "%RECIPE_CACHE_DIR%/unpack/Payload"
+    destination_path: "%RECIPE_CACHE_DIR%/%NAME%"
+
+- Processor: CodeSignatureVerifier
+  Arguments:
+    input_path: '%pathname%'
+    expected_authority_names: ""
+    requirement: identifier tart and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "9M2P8L4D89"
+
+- Processor: PathDeleter
+  Arguments:
+    path_list: 
+      - "%RECIPE_CACHE_DIR%/unpack"
