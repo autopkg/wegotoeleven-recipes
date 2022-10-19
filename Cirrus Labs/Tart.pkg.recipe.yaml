@@ -5,13 +5,11 @@ MinimumVersion: '2.3'
 ParentRecipe: com.github.wegotoeleven-recipes.download.Tart
 
 Input:
-
   NAME: Tart
   GITHUB_REPO: cirruslabs/tart
   INCLUDE_PRERELEASES: "false"
 
 Process:
-
 - Processor: FlatPkgUnpacker
   Arguments:
     flat_pkg_path: "%pathname%"

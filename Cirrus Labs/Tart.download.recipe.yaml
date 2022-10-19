@@ -8,7 +8,6 @@ Input:
   INCLUDE_PRERELEASES: "false"
 
 Process:
-
 - Processor: GitHubReleasesInfoProvider
   Arguments:
     asset_regex: ^Tart.*?pkg$
