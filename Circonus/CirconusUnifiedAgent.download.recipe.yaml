@@ -1,0 +1,42 @@
+Description: Downloads the latest versions of the Circonus Unified Agent from Github
+Comment: This recipe does not use code signature verification as the product isn't signed :(
+Identifier: com.github.wegotoeleven-recipes.download.CirconusUnifiedAgent
+MinimumVersion: '2.3'
+
+Input:
+  NAME: Circonus Unified Agent
+  INCLUDE_PRERELEASES: ""
+  GITHUB_REPO: circonus-labs/circonus-unified-agent
+  AMD64_VAR: x86_64
+  ARM64_VAR: arm64
+
+Process:
+  - Processor: GitHubReleasesInfoProvider
+    Arguments:
+      asset_regex: circonus-unified-agent_\d+.\d+.\d+_darwin_%AMD64_VAR%.tar.gz
+      github_repo: "%GITHUB_REPO%"
+      include_prereleases: "%INCLUDE_PRERELEASES%"
+      sort_by_highest_tag_names: "true"
+
+  - Processor: URLDownloader
+    Arguments:
+      filename: "cua-amd64.tar.gz"
+
+  - Processor: EndOfCheckPhase
+    Arguments:
+      amd64_filename: "%filename%"
+
+  - Processor: GitHubReleasesInfoProvider
+    Arguments:
+      asset_regex: circonus-unified-agent_\d+.\d+.\d+_darwin_%ARM64_VAR%.tar.gz
+      github_repo: "%GITHUB_REPO%"
+      include_prereleases: "%INCLUDE_PRERELEASES%"
+      sort_by_highest_tag_names: "true"
+
+  - Processor: URLDownloader
+    Arguments:
+      filename: "cua-arm64.tar.gz"
+
+  - Processor: EndOfCheckPhase
+    Arguments:
+      arm64_filename: "%filename%"

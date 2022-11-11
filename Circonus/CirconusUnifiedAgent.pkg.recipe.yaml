@@ -1,0 +1,108 @@
+Description: Downloads the latest versions of the Circonus Unified Agent from Github and combines into an installer pkg
+Comment: This recipe does not use code signature verification as the product isn't signed :(
+Identifier: com.github.wegotoeleven-recipes.pkg.CirconusUnifiedAgent
+MinimumVersion: '2.3'
+ParentRecipe: com.github.wegotoeleven-recipes.download.CirconusUnifiedAgent
+
+Input:
+  NAME: Circonus Unified Agent
+  INCLUDE_PRERELEASES: ""
+  GITHUB_REPO: circonus-labs/circonus-unified-agent
+  AMD64_VAR: x86_64
+  ARM64_VAR: arm64
+  API_KEY: ""
+
+Process:
+  - Processor: PkgRootCreator
+    Arguments:
+      pkgdirs:
+        scripts: "0755"
+        root/private: "0755"
+        root/private/tmp: "0777"
+        root/private/tmp/cua: "0755"
+      pkgroot: "%RECIPE_CACHE_DIR%/pkgroot"
+
+  - Processor: FileMover
+    Arguments:
+      overwrite: true
+      source: "%RECIPE_CACHE_DIR%/downloads/%amd64_filename%"
+      target: "%RECIPE_CACHE_DIR%/pkgroot/root/private/tmp/cua/cua_amd64.tar.gz"
+
+  - Processor: FileMover
+    Arguments:
+      overwrite: true
+      source: "%RECIPE_CACHE_DIR%/downloads/%arm64_filename%"
+      target: "%RECIPE_CACHE_DIR%/pkgroot/root/private/tmp/cua/cua_arm64.tar.gz"
+
+  - Processor: FileCreator
+    Arguments:
+      file_path: "%RECIPE_CACHE_DIR%/pkgroot/scripts/preinstall"
+      file_mode: "0755"
+      file_content: |
+        #!/bin/zsh
+
+        # Determine whether Circonus is already installed
+        if [[ -e "/Library/LaunchDaemons/com.circonus.circonus-unified-agent.plist" ]]; then
+            echo "Circonus LaunchDaemon is installed. Unloading and removing..."
+            /bin/launchctl unload "/Library/LaunchDaemons/com.circonus.circonus-unified-agent.plist"
+            rm -rf "/Library/LaunchDaemons/com.circonus.circonus-unified-agent.plist"
+        fi
+
+  - Processor: FileCreator
+    Arguments:
+      file_path: "%RECIPE_CACHE_DIR%/pkgroot/scripts/postinstall"
+      file_mode: "0755"
+      file_content: |
+        #!/bin/zsh
+
+        # Check for API key
+        API_KEY="%API_KEY%"
+        if [[ -z "${API_KEY}" ]]; then
+            echo "API Key not supplied. Unable to install. Bailing..."
+            exit 1
+        fi
+
+        # Create install directory if missing
+        if [[ ! -e "/opt/circonus/unified-agent" ]]; then
+            echo "Circonus install directory not present. Creating..."
+            mkdir -p "/opt/circonus/unified-agent"
+        fi
+
+        # Determine architecture and install corresponding tarball
+        ARCH=$(/usr/bin/arch)
+        if [[ "${ARCH}" == i386 ]]; then
+            echo "x86_64 arch detected. Installing..."
+            /usr/bin/tar xf "/private/tmp/cua/cua_amd64.tar.gz" --directory /opt/circonus/unified-agent
+        else
+            echo "x86_64 arch detected. Installing..."
+            /usr/bin/tar xf "/private/tmp/cua/cua_arm64.tar.gz" --directory /opt/circonus/unified-agent
+        fi
+
+        # Cleanup
+        echo "Cleaning up..."
+        /bin/rm -rf "/private/tmp/cua/cua_amd64.tar.gz" "/private/tmp/cua/cua_arm64.tar.gz"
+
+        # Setup config file
+        if [[ ! -e "/opt/circonus/unified-agent/etc/circonus-unified-agent.conf" ]]; then
+            echo "Config file not present. Setting up config file..."
+            cp "/opt/circonus/unified-agent/etc/example-circonus-unified-agent.conf" "/opt/circonus/unified-agent/etc/circonus-unified-agent.conf"
+        else
+            echo "Config file already deployed."
+        fi
+
+        # Update API key in config file
+        /usr/bin/sed -i -e "s/  api_token = \".*\"/  api_token = \"${API_KEY}\"/" "/opt/circonus/unified-agent/etc/circonus-unified-agent.conf"
+
+        # Setup LaunchDaemon
+        cp "/opt/circonus/unified-agent/service/circonus-unified-agent.macos" "/Library/LaunchDaemons/com.circonus.circonus-unified-agent.plist"
+        /bin/launchctl load "/Library/LaunchDaemons/com.circonus.circonus-unified-agent.plist"
+
+  - Processor: PkgCreator
+    Arguments:
+      pkg_request:
+        id: com.circonus.circonus-unified-agent
+        options: purge_ds_store
+        pkgname: "%NAME%-%version%"
+        pkgroot: "%pkgroot%/root"
+        scripts: "%pkgroot%/scripts"
+        version: "%version%"
