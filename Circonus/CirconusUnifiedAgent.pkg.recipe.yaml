@@ -45,7 +45,7 @@ Process:
         if [[ -e "/Library/LaunchDaemons/com.circonus.circonus-unified-agent.plist" ]]; then
             echo "Circonus LaunchDaemon is installed. Unloading and removing..."
             /bin/launchctl unload "/Library/LaunchDaemons/com.circonus.circonus-unified-agent.plist"
-            rm -rf "/Library/LaunchDaemons/com.circonus.circonus-unified-agent.plist"
+            /bin/rm -rf "/Library/LaunchDaemons/com.circonus.circonus-unified-agent.plist"
         fi
 
   - Processor: FileCreator
@@ -65,7 +65,7 @@ Process:
         # Create install directory if missing
         if [[ ! -e "/opt/circonus/unified-agent" ]]; then
             echo "Circonus install directory not present. Creating..."
-            mkdir -p "/opt/circonus/unified-agent"
+            /bin/mkdir -p "/opt/circonus/unified-agent"
         fi
 
         # Determine architecture and install corresponding tarball
@@ -85,7 +85,7 @@ Process:
         # Setup config file
         if [[ ! -e "/opt/circonus/unified-agent/etc/circonus-unified-agent.conf" ]]; then
             echo "Config file not present. Setting up config file..."
-            cp "/opt/circonus/unified-agent/etc/example-circonus-unified-agent.conf" "/opt/circonus/unified-agent/etc/circonus-unified-agent.conf"
+            /bin/cp "/opt/circonus/unified-agent/etc/example-circonus-unified-agent.conf" "/opt/circonus/unified-agent/etc/circonus-unified-agent.conf"
         else
             echo "Config file already deployed."
         fi
@@ -94,7 +94,7 @@ Process:
         /usr/bin/sed -i -e "s/  api_token = \".*\"/  api_token = \"${API_KEY}\"/" "/opt/circonus/unified-agent/etc/circonus-unified-agent.conf"
 
         # Setup LaunchDaemon
-        cp "/opt/circonus/unified-agent/service/circonus-unified-agent.macos" "/Library/LaunchDaemons/com.circonus.circonus-unified-agent.plist"
+        /bin/cp "/opt/circonus/unified-agent/service/circonus-unified-agent.macos" "/Library/LaunchDaemons/com.circonus.circonus-unified-agent.plist"
         /bin/launchctl load "/Library/LaunchDaemons/com.circonus.circonus-unified-agent.plist"
 
   - Processor: PkgCreator
