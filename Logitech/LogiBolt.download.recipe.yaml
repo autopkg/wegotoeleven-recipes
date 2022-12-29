@@ -1,10 +1,10 @@
-Description: Unzip the latest version of the Logi Options+ installer app
-Identifier: com.github.wegotoeleven-recipes.download.LogiOptionsPlus
+Description: Unzip the latest version of the Logi Bolt installer app
+Identifier: com.github.wegotoeleven-recipes.download.LogiBolt
 MinimumVersion: '2.3'
 
 Input:
-  NAME: Logi OptionsPlus
-  URL: https://download01.logi.com/web/ftp/pub/techsupport/optionsplus/logioptionsplus_installer.zip
+  NAME: Logi Bolt
+  URL: https://download01.logi.com/web/ftp/pub/techsupport/logibolt/LogiBoltInstaller.zip
 
 Process:
   - Processor: URLDownloader
@@ -27,7 +27,7 @@ Process:
   - Processor: CodeSignatureVerifier
     Arguments: 
       input_path: "%found_filename%"
-      requirement: identifier "com.logi.optionsplus.installer" and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = QED4VVPZWA
+      requirement: identifier "com.logi.bolt.installer.core" and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = QED4VVPZWA
 
   - Processor: PlistReader
     Arguments:
