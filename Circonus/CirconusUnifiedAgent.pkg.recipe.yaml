@@ -22,17 +22,17 @@ Process:
         root/private/tmp/cua: "0755"
       pkgroot: "%RECIPE_CACHE_DIR%/pkgroot"
 
-  - Processor: FileMover
+  - Processor: Copier
     Arguments:
       overwrite: true
-      source: "%RECIPE_CACHE_DIR%/downloads/%amd64_filename%"
-      target: "%RECIPE_CACHE_DIR%/pkgroot/root/private/tmp/cua/cua_amd64.tar.gz"
+      source_path: "%RECIPE_CACHE_DIR%/downloads/%amd64_filename%"
+      destination_path: "%RECIPE_CACHE_DIR%/pkgroot/root/private/tmp/cua/cua_amd64.tar.gz"
 
-  - Processor: FileMover
+  - Processor: Copier
     Arguments:
       overwrite: true
-      source: "%RECIPE_CACHE_DIR%/downloads/%arm64_filename%"
-      target: "%RECIPE_CACHE_DIR%/pkgroot/root/private/tmp/cua/cua_arm64.tar.gz"
+      source_path: "%RECIPE_CACHE_DIR%/downloads/%arm64_filename%"
+      destination_path: "%RECIPE_CACHE_DIR%/pkgroot/root/private/tmp/cua/cua_arm64.tar.gz"
 
   - Processor: FileCreator
     Arguments:
