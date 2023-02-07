@@ -1,0 +1,43 @@
+Description: Downloads the latest i386 and arm64 versions of Miro.
+Identifier: com.github.wegotoeleven-recipes.download.MiroUniversal
+MinimumVersion: "2.3"
+
+Input:
+  NAME: Miro
+  X86_64_DOWNLOAD_URL: https://desktop.miro.com/platforms/darwin/Miro.dmg
+  ARM64_DOWNLOAD_URL: https://desktop.miro.com/platforms/darwin-arm64/Miro.dmg
+
+Process:
+  - Processor: URLDownloader
+    Arguments:
+      filename: "%NAME%-i386.dmg"
+      url: "%X86_64_DOWNLOAD_URL%"
+
+  - Processor: EndOfCheckPhase
+
+  - Processor: CodeSignatureVerifier
+    Arguments:
+      input_path: "%pathname%/Miro.app"
+      requirement: identifier "com.electron.realtimeboard" and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = M3GM7MFY7U
+
+  - Processor: Versioner
+    Arguments:
+      input_plist_path: "%pathname%/Miro.app/Contents/Info.plist"
+      plist_version_key: CFBundleShortVersionString
+
+  - Processor: URLDownloader
+    Arguments:
+      filename: "%NAME%-arm64.dmg"
+      url: "%ARM64_DOWNLOAD_URL%"
+
+  - Processor: EndOfCheckPhase
+
+  - Processor: CodeSignatureVerifier
+    Arguments:
+      input_path: "%pathname%/Miro.app"
+      requirement: identifier "com.electron.realtimeboard" and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = M3GM7MFY7U
+
+  - Processor: Versioner
+    Arguments:
+      input_plist_path: "%pathname%/Miro.app/Contents/Info.plist"
+      plist_version_key: CFBundleShortVersionString
