@@ -8,7 +8,7 @@ Input:
   NAME: Circonus Unified Agent
   INCLUDE_PRERELEASES: ""
   GITHUB_REPO: circonus-labs/circonus-unified-agent
-  AMD64_VAR: x86_64
+  AMD64_VAR: amd64
   ARM64_VAR: arm64
   API_KEY: ""
 
@@ -25,13 +25,13 @@ Process:
   - Processor: Copier
     Arguments:
       overwrite: true
-      source_path: "%RECIPE_CACHE_DIR%/downloads/%amd64_filename%"
+      source_path: "%amd64_filename%"
       destination_path: "%RECIPE_CACHE_DIR%/pkgroot/root/private/tmp/cua/cua_amd64.tar.gz"
 
   - Processor: Copier
     Arguments:
       overwrite: true
-      source_path: "%RECIPE_CACHE_DIR%/downloads/%arm64_filename%"
+      source_path: "%arm64_filename%"
       destination_path: "%RECIPE_CACHE_DIR%/pkgroot/root/private/tmp/cua/cua_arm64.tar.gz"
 
   - Processor: FileCreator
