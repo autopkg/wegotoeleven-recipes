@@ -78,6 +78,15 @@ Process:
             /usr/bin/tar xf "/private/tmp/cua/cua_arm64.tar.gz" --directory /opt/circonus/unified-agent
         fi
 
+        # Create checks directory if missing
+        if [[ ! -e "/opt/circonus/unified-agent/etc/checks.d" ]]; then
+            echo "Circonus checks directory not present. Creating..."
+            /bin/mkdir -p "/opt/circonus/unified-agent/etc/checks.d"
+        fi
+
+        # Set permissions
+        /usr/sbin/chown -R root:wheel /opt/circonus/unified-agent
+
         # Cleanup
         echo "Cleaning up..."
         /bin/rm -rf "/private/tmp/cua/cua_amd64.tar.gz" "/private/tmp/cua/cua_arm64.tar.gz"
