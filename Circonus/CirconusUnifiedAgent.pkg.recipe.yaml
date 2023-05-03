@@ -71,10 +71,10 @@ Process:
         # Determine architecture and install corresponding tarball
         ARCH=$(/usr/bin/arch)
         if [[ "${ARCH}" == i386 ]]; then
-            echo "x86_64 arch detected. Installing..."
+            echo "i386 arch detected. Installing..."
             /usr/bin/tar xf "/private/tmp/cua/cua_amd64.tar.gz" --directory /opt/circonus/unified-agent
         else
-            echo "x86_64 arch detected. Installing..."
+            echo "arm64 arch detected. Installing..."
             /usr/bin/tar xf "/private/tmp/cua/cua_arm64.tar.gz" --directory /opt/circonus/unified-agent
         fi
 
