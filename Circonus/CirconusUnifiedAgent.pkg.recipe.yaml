@@ -140,3 +140,9 @@ Process:
         pkgroot: "%pkgroot%/root"
         scripts: "%pkgroot%/scripts"
         version: "%version%"
+
+  - Processor: PathDeleter
+    Arguments:
+      path_list:
+        - "%RECIPE_CACHE_DIR%/downloads"
+        - "%RECIPE_CACHE_DIR%/pkgroot"
