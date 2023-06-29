@@ -46,6 +46,18 @@ Process:
             echo "Circonus LaunchDaemon is installed. Unloading and removing..."
             /bin/launchctl unload "/Library/LaunchDaemons/com.circonus.circonus-unified-agent.plist"
             /bin/rm -rf "/Library/LaunchDaemons/com.circonus.circonus-unified-agent.plist"
+            /bin/rm -rf "/opt/circonus/unified-agent/service"
+        else
+            echo "Circonus LaunchDaemon not installed."
+        fi
+
+        if [[ -e "/opt/circonus/unified-agent/sbin/circonus-unified-agentd" ]]; then
+            # Check installed version
+            INSTALLED_VERSION=$(/opt/circonus/unified-agent/sbin/circonus-unified-agentd --version 2>/dev/null | /usr/bin/awk -F' ' '/circonus-unified-agent/ { print $2 }')
+            echo "Circonus Unified Agent version ${INSTALLED_VERSION} installed. Removing..."
+            /bin/rm -rf "/opt/circonus/unified-agent/sbin/circonus-unified-agentd"
+        else
+            echo "Circonus Unified Agent binary not installed."
         fi
 
   - Processor: FileCreator
@@ -64,8 +76,10 @@ Process:
 
         # Create install directory if missing
         if [[ ! -e "/opt/circonus/unified-agent" ]]; then
-            echo "Circonus install directory not present. Creating..."
+            echo "Circonus Unified Agent install directory not present. Creating..."
             /bin/mkdir -p "/opt/circonus/unified-agent"
+        else
+            echo "Circonus Unified Agent install directory present."
         fi
 
         # Determine architecture and install corresponding tarball
@@ -80,16 +94,28 @@ Process:
 
         # Create checks directory if missing
         if [[ ! -e "/opt/circonus/unified-agent/etc/checks.d" ]]; then
-            echo "Circonus checks directory not present. Creating..."
+            echo "Circonus Unified Agent checks directory not present. Creating..."
             /bin/mkdir -p "/opt/circonus/unified-agent/etc/checks.d"
+        else
+            echo "Circonus Unified Agent checks directory present."
         fi
 
         # Set permissions
+        echo "Setting permissions..."
         /usr/sbin/chown -R root:wheel /opt/circonus/unified-agent
 
         # Cleanup
         echo "Cleaning up..."
         /bin/rm -rf "/private/tmp/cua/cua_amd64.tar.gz" "/private/tmp/cua/cua_arm64.tar.gz"
+
+        # Check and report installed version
+        INSTALLED_VERSION=$(/opt/circonus/unified-agent/sbin/circonus-unified-agentd --version 2>/dev/null | /usr/bin/awk -F' ' '/circonus-unified-agent/ { print $2 }')
+        if [[ -n "${INSTALLED_VERSION}"" ]]; then
+            echo "Circonus Unified Agent version ${INSTALLED_VERSION} installed."
+        else
+            echo "Unable to determine Circonus Unified Agent version. Something has gone wrong during the installation process! Please try again."
+            exit 1
+        fi
 
         # Setup config file
         if [[ ! -e "/opt/circonus/unified-agent/etc/circonus-unified-agent.conf" ]]; then
@@ -100,9 +126,11 @@ Process:
         fi
 
         # Update API key in config file
+        echo "Updating API key..."
         /usr/bin/sed -i -e "s/  api_token = \".*\"/  api_token = \"${API_KEY}\"/" "/opt/circonus/unified-agent/etc/circonus-unified-agent.conf"
 
         # Setup LaunchDaemon
+        echo "Setting up Circonus Unified Agent LaunchDaemon..."
         /bin/cp "/opt/circonus/unified-agent/service/circonus-unified-agent.macos" "/Library/LaunchDaemons/com.circonus.circonus-unified-agent.plist"
         /bin/launchctl load "/Library/LaunchDaemons/com.circonus.circonus-unified-agent.plist"
 
