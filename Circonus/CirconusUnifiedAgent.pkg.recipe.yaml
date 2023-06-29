@@ -46,20 +46,17 @@ Process:
             echo "Circonus LaunchDaemon is installed. Unloading and removing..."
             /bin/launchctl unload "/Library/LaunchDaemons/com.circonus.circonus-unified-agent.plist"
             /bin/rm -rf "/Library/LaunchDaemons/com.circonus.circonus-unified-agent.plist"
-            /bin/rm -rf "/opt/circonus/unified-agent/service"
         else
             echo "Circonus LaunchDaemon not installed."
         fi
 
+        # Check and report installed version
         if [[ -e "/opt/circonus/unified-agent/sbin/circonus-unified-agentd" ]]; then
-            # Check installed version
             INSTALLED_VERSION=$(/opt/circonus/unified-agent/sbin/circonus-unified-agentd --version 2>/dev/null | /usr/bin/awk -F' ' '/circonus-unified-agent/ { print $2 }')
-            echo "Circonus Unified Agent version ${INSTALLED_VERSION} installed. Removing..."
-            /bin/rm -rf "/opt/circonus/unified-agent/sbin/circonus-unified-agentd"
+            echo "Circonus Unified Agent version ${INSTALLED_VERSION} installed."
         else
             echo "Circonus Unified Agent binary not installed."
         fi
-
   - Processor: FileCreator
     Arguments:
       file_path: "%RECIPE_CACHE_DIR%/pkgroot/scripts/postinstall"
@@ -86,10 +83,10 @@ Process:
         ARCH=$(/usr/bin/arch)
         if [[ "${ARCH}" == i386 ]]; then
             echo "i386 arch detected. Installing..."
-            /usr/bin/tar xf "/private/tmp/cua/cua_amd64.tar.gz" --directory /opt/circonus/unified-agent
+            /usr/bin/tar fUxz "/private/tmp/cua/cua_amd64.tar.gz" --directory /opt/circonus/unified-agent
         else
             echo "arm64 arch detected. Installing..."
-            /usr/bin/tar xf "/private/tmp/cua/cua_arm64.tar.gz" --directory /opt/circonus/unified-agent
+            /usr/bin/tar fUxz "/private/tmp/cua/cua_arm64.tar.gz" --directory /opt/circonus/unified-agent
         fi
 
         # Create checks directory if missing
@@ -106,7 +103,7 @@ Process:
 
         # Cleanup
         echo "Cleaning up installation files..."
-        /bin/rm -rf "/private/tmp/cua/cua_amd64.tar.gz" "/private/tmp/cua/cua_arm64.tar.gz"
+        /bin/rm -rf "/private/tmp/cua"
 
         # Check and report installed version
         INSTALLED_VERSION=$(/opt/circonus/unified-agent/sbin/circonus-unified-agentd --version 2>/dev/null | /usr/bin/awk -F' ' '/circonus-unified-agent/ { print $2 }')
