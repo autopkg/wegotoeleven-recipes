@@ -105,12 +105,12 @@ Process:
         /usr/sbin/chown -R root:wheel /opt/circonus/unified-agent
 
         # Cleanup
-        echo "Cleaning up..."
+        echo "Cleaning up installation files..."
         /bin/rm -rf "/private/tmp/cua/cua_amd64.tar.gz" "/private/tmp/cua/cua_arm64.tar.gz"
 
         # Check and report installed version
         INSTALLED_VERSION=$(/opt/circonus/unified-agent/sbin/circonus-unified-agentd --version 2>/dev/null | /usr/bin/awk -F' ' '/circonus-unified-agent/ { print $2 }')
-        if [[ -n "${INSTALLED_VERSION}"" ]]; then
+        if [[ -n "${INSTALLED_VERSION}" ]]; then
             echo "Circonus Unified Agent version ${INSTALLED_VERSION} installed."
         else
             echo "Unable to determine Circonus Unified Agent version. Something has gone wrong during the installation process! Please try again."
