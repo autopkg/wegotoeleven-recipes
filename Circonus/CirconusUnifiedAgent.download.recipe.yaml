@@ -6,62 +6,29 @@ Input:
   NAME: Circonus Unified Agent
   INCLUDE_PRERELEASES: ""
   GITHUB_REPO: circonus-labs/circonus-unified-agent
-  AMD64_VAR: amd64
-  ARM64_VAR: arm64
 
 Process:
   - Processor: GitHubReleasesInfoProvider
     Arguments:
-      asset_regex: circonus-unified-agent_\d+.\d+.\d+_darwin_%AMD64_VAR%.tar.gz
+      asset_regex: circonus-unified-agent_\d+.\d+.\d+_darwin_all.tar.gz
       github_repo: "%GITHUB_REPO%"
       include_prereleases: "%INCLUDE_PRERELEASES%"
       sort_by_highest_tag_names: "true"
 
   - Processor: URLDownloader
     Arguments:
-      filename: "cua-amd64.tar.gz"
+      filename: "cua_install.tar.gz"
 
   - Processor: EndOfCheckPhase
-    Arguments:
-      amd64_filename: "%pathname%"
 
   - Processor: Unarchiver
     Arguments:
-      archive_path: "%amd64_filename%"
-      destination_path: "%RECIPE_CACHE_DIR%/unpack/amd64"
+      archive_path: "%pathname%"
+      destination_path: "%RECIPE_CACHE_DIR%/unpack/"
 
   - Processor: FileFinder
     Arguments:
-      pattern: "%RECIPE_CACHE_DIR%/unpack/amd64/*/circonus-unified-agentd"
-
-  - Processor: CodeSignatureVerifier
-    Arguments:
-      input_path: "%found_filename%"
-      requirement: identifier "circonus-unified-agentd" and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = SG4A8XDNN2
-
-  - Processor: GitHubReleasesInfoProvider
-    Arguments:
-      asset_regex: circonus-unified-agent_\d+.\d+.\d+_darwin_%ARM64_VAR%.tar.gz
-      github_repo: "%GITHUB_REPO%"
-      include_prereleases: "%INCLUDE_PRERELEASES%"
-      sort_by_highest_tag_names: "true"
-
-  - Processor: URLDownloader
-    Arguments:
-      filename: "cua-arm64.tar.gz"
-
-  - Processor: EndOfCheckPhase
-    Arguments:
-      arm64_filename: "%pathname%"
-
-  - Processor: Unarchiver
-    Arguments:
-      archive_path: "%arm64_filename%"
-      destination_path: "%RECIPE_CACHE_DIR%/unpack/arm64"
-
-  - Processor: FileFinder
-    Arguments:
-      pattern: "%RECIPE_CACHE_DIR%/unpack/arm64/*/circonus-unified-agentd"
+      pattern: "%RECIPE_CACHE_DIR%/unpack/*/circonus-unified-agentd"
 
   - Processor: CodeSignatureVerifier
     Arguments:

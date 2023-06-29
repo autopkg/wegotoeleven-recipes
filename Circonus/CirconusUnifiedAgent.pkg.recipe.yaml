@@ -8,8 +8,7 @@ Input:
   NAME: Circonus Unified Agent
   INCLUDE_PRERELEASES: ""
   GITHUB_REPO: circonus-labs/circonus-unified-agent
-  AMD64_VAR: amd64
-  ARM64_VAR: arm64
+  UNIVERSAL_VAR: all
   API_KEY: ""
 
 Process:
@@ -19,20 +18,13 @@ Process:
         scripts: "0755"
         root/private: "0755"
         root/private/tmp: "0777"
-        root/private/tmp/cua: "0755"
+        root/private/tmp/cua_install: "0755"
       pkgroot: "%RECIPE_CACHE_DIR%/pkgroot"
 
   - Processor: Copier
     Arguments:
-      overwrite: true
-      source_path: "%amd64_filename%"
-      destination_path: "%RECIPE_CACHE_DIR%/pkgroot/root/private/tmp/cua/cua_amd64.tar.gz"
-
-  - Processor: Copier
-    Arguments:
-      overwrite: true
-      source_path: "%arm64_filename%"
-      destination_path: "%RECIPE_CACHE_DIR%/pkgroot/root/private/tmp/cua/cua_arm64.tar.gz"
+      source_path: "%pathname%"
+      destination_path: "%RECIPE_CACHE_DIR%/pkgroot/root/private/tmp/cua_install/"
 
   - Processor: FileCreator
     Arguments:
@@ -79,15 +71,9 @@ Process:
             echo "Circonus Unified Agent install directory present."
         fi
 
-        # Determine architecture and install corresponding tarball
-        ARCH=$(/usr/bin/arch)
-        if [[ "${ARCH}" == i386 ]]; then
-            echo "i386 arch detected. Installing..."
-            /usr/bin/tar fUxz "/private/tmp/cua/cua_amd64.tar.gz" --directory /opt/circonus/unified-agent
-        else
-            echo "arm64 arch detected. Installing..."
-            /usr/bin/tar fUxz "/private/tmp/cua/cua_arm64.tar.gz" --directory /opt/circonus/unified-agent
-        fi
+        # Install universal tarball
+        echo "Installing..."
+        /usr/bin/tar fUxz "/private/tmp/cua_install/cua_install.tar.gz" --directory /opt/circonus/unified-agent
 
         # Create checks directory if missing
         if [[ ! -e "/opt/circonus/unified-agent/etc/checks.d" ]]; then
