@@ -10,6 +10,7 @@ Input:
   GITHUB_REPO: circonus-labs/circonus-unified-agent
   UNIVERSAL_VAR: all
   API_KEY: ""
+  DATA_COLLECTION_INTERVAL: ""
 
 Process:
   - Processor: PkgRootCreator
@@ -63,6 +64,13 @@ Process:
             exit 1
         fi
 
+        # Check for data collection interval
+        DATA_COLLECTION_INTERVAL="%DATA_COLLECTION_INTERVAL%"
+        if [[ -z "${DATA_COLLECTION_INTERVAL}" ]]; then
+            echo "Data collection interval not supplied. Leaving at default of 10 seconds"
+            DATA_COLLECTION_INTERVAL="10s"
+        fi
+
         # Create install directory if missing
         if [[ ! -e "/opt/circonus/unified-agent" ]]; then
             echo "Circonus Unified Agent install directory not present. Creating..."
@@ -111,6 +119,13 @@ Process:
         # Update API key in config file
         echo "Updating API key..."
         /usr/bin/sed -i -e "s/  api_token = \".*\"/  api_token = \"${API_KEY}\"/" "/opt/circonus/unified-agent/etc/circonus-unified-agent.conf"
+
+        # Update data collection interval. Default in the configuration is 10 seconds
+        # Note, that ideally this value should be set via some form of configuration management rather than in this post
+        # install, however if this is not possible and the value has been configured within the AutoPkg recipe, i'll be
+        # updated here
+        echo "Updating data collection interval to ${DATA_COLLECTION_INTERVAL}..."
+        /usr/bin/sed -i -e "s/  interval = \".*\"/  interval = \"${DATA_COLLECTION_INTERVAL}\"/" "/opt/circonus/unified-agent/etc/circonus-unified-agent.conf"
 
         # Setup LaunchDaemon
         echo "Setting up Circonus Unified Agent LaunchDaemon..."
