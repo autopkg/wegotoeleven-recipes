@@ -10,23 +10,60 @@ Input:
   INCLUDE_PRERELEASES: "false"
 
 Process:
-- Processor: FlatPkgUnpacker
-  Arguments:
-    flat_pkg_path: "%pathname%"
-    destination_path: "%RECIPE_CACHE_DIR%/unpack"
 
-- Processor: PkgPayloadUnpacker
-  Arguments:
-    pkg_payload_path: "%RECIPE_CACHE_DIR%/unpack/Payload"
-    destination_path: "%RECIPE_CACHE_DIR%/%NAME%"
+  - Processor: Unarchiver
+    Arguments:
+      archive_path: '%pathname%'
+      destination_path: "%RECIPE_CACHE_DIR%/unpack/"
 
-- Processor: CodeSignatureVerifier
-  Arguments:
-    input_path: '%pathname%'
-    expected_authority_names: ""
-    requirement: identifier tart and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "9M2P8L4D89"
+  - Processor: PkgRootCreator
+    Arguments:
+      pkgdirs: {}
+      pkgroot: "%RECIPE_CACHE_DIR%/scripts"
 
-- Processor: PathDeleter
-  Arguments:
-    path_list: 
-      - "%RECIPE_CACHE_DIR%/unpack"
+  - Processor: PkgRootCreator
+    Arguments:
+      pkgdirs:
+        Library: "0755"
+        Library/Application Support: "0755"
+        Library/Application Support/Tart: "0755"
+      pkgroot: "%RECIPE_CACHE_DIR%/pkgroot"
+
+  - Processor: Copier
+    Arguments:
+      destination_path: "%RECIPE_CACHE_DIR%/pkgroot/Library/Application Support/Tart/"
+      overwrite: true
+      source_path: "%RECIPE_CACHE_DIR%/unpack/"
+
+  - Processor: FileCreator
+    Arguments:
+      file_path: "%RECIPE_CACHE_DIR%/scripts/postinstall"
+      file_mode: "0755"
+      file_content: |
+        #!/bin/bash
+
+        set -e
+
+        # Remove existing symlink/executable
+        rm -rf /usr/local/bin/tart
+
+        # Create new executable
+        echo "#!/bin/sh" > /usr/local/bin/tart
+        echo "exec '/Library/Application Support/Tart/tart.app/Contents/MacOS/tart' \"\$@\"" >> /usr/local/bin/tart
+
+        # Set permissions
+        chmod +x /usr/local/bin/tart
+
+  - Processor: PkgCreator
+    Arguments:
+      pkg_request:
+        pkgname: "%NAME%-%version%"
+        pkgdir: "%RECIPE_CACHE_DIR%"
+        id: com.github.cirruslabs.tart-app
+        options: purge_ds_store
+        scripts: scripts
+        version: "%version%"
+        chown:
+          - path: Library
+            user: root
+            group: wheel

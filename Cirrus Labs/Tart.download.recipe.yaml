@@ -8,20 +8,13 @@ Input:
   INCLUDE_PRERELEASES: "false"
 
 Process:
-- Processor: GitHubReleasesInfoProvider
-  Arguments:
-    asset_regex: ^Tart.*?pkg$
-    github_repo: "%GITHUB_REPO%"
-    include_prereleases: "%INCLUDE_PRERELEASES%"
 
-- Processor: URLDownloader
+  - Processor: GitHubReleasesInfoProvider
+    Arguments:
+      asset_regex: ^tart.*?tar.gz$
+      github_repo: "%GITHUB_REPO%"
+      include_prereleases: "%INCLUDE_PRERELEASES%"
 
-- Processor: EndOfCheckPhase
+  - Processor: URLDownloader
 
-- Processor: CodeSignatureVerifier
-  Arguments:
-    input_path: '%pathname%'
-    expected_authority_names:
-      - "Developer ID Installer: Cirrus Labs, Inc. (9M2P8L4D89)"
-      - Developer ID Certification Authority
-      - Apple Root CA
+  - Processor: EndOfCheckPhase
