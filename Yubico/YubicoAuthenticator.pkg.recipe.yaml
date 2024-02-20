@@ -1,18 +1,18 @@
-Description: Downloads the latest version of Tart from Github and packages into a pkg
-Identifier: com.github.wegotoeleven-recipes.pkg.VirtualBuddy
-ParentRecipe: com.github.wegotoeleven-recipes.download.VirtualBuddy
+Description: Recipe description
+Identifier: com.github.wegotoeleven-recipes.pkg.YubicoAuthenticator
+ParentRecipe: com.github.n8felton.yubico-authenticator.download
 MinimumVersion: '2.3'
 
 Input:
-  NAME: VirtualBuddy
-  GITHUB_REPO: insidegui/VirtualBuddy
+  NAME: Yubico Authenticator
+  GITHUB_REPO: Yubico/yubioath-flutter
   INCLUDE_PRERELEASES: "false"
 
 Process:
 
   - Processor: AppDmgVersioner
     Arguments:
-      dmg_path: "%RECIPE_CACHE_DIR%/downloads/%NAME%.dmg"
+      dmg_path: "%RECIPE_CACHE_DIR%/downloads/%NAME%-%version%.dmg"
 
   - Processor: PkgRootCreator
     Arguments:
@@ -22,8 +22,8 @@ Process:
 
   - Processor: Copier
     Arguments:
-      destination_path: "%RECIPE_CACHE_DIR%/root/Applications/%app_name%"
-      source_path: "%RECIPE_CACHE_DIR%/downloads/%NAME%.dmg/%app_name%"
+      destination_path: "%RECIPE_CACHE_DIR%/root/Applications/%NAME%.app"
+      source_path: "%RECIPE_CACHE_DIR%/downloads/%NAME%-%version%.dmg/%NAME%.app"
 
   - Processor: PkgCreator
     Arguments:

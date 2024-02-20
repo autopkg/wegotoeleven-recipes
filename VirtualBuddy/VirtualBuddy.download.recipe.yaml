@@ -1,4 +1,4 @@
-Description: Recipe description
+Description: RDownloads the latest version of VirtualBuddy from Github.
 Identifier: com.github.wegotoeleven-recipes.download.VirtualBuddy
 MinimumVersion: '2.3'
 
