@@ -57,7 +57,7 @@ Process:
   - Processor: PkgCreator
     Arguments:
       pkg_request:
-        pkgname: "%NAME%-%ARCH%-%version%"
+        pkgname: "%NAME%-%version%"
         pkgdir: "%RECIPE_CACHE_DIR%"
         id: com.github.cirruslabs.tart-app
         options: purge_ds_store
