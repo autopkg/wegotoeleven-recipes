@@ -8,6 +8,11 @@ Input:
   INCLUDE_PRERELEASES: "false"
 
 Process:
+  - Processor: DeprecationWarning
+    Arguments:
+      message: >
+        ⚠️ The recipe com.github.wegotoeleven-recipes.download.Tart is deprecated.
+        Please use com.github.kevinmcox.download.Tart going forward.
 
   - Processor: GitHubReleasesInfoProvider
     Arguments:
