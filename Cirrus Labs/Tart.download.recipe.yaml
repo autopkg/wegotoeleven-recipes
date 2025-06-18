@@ -1,18 +1,22 @@
-Description: Downloads the latest version of Tart from Github. Specifiy an ARCH of "arm64" for Apple Silicon or "amd64" for Intel.
+Description: Downloads the latest version of Tart from Github.
 Identifier: com.github.wegotoeleven-recipes.download.Tart
 MinimumVersion: '2.3'
 
 Input:
   NAME: Tart
-  ARCH: arm64
   GITHUB_REPO: cirruslabs/tart
   INCLUDE_PRERELEASES: "false"
 
 Process:
+  - Processor: DeprecationWarning
+    Arguments:
+      message: >
+        ⚠️ The recipe com.github.wegotoeleven-recipes.download.Tart is deprecated.
+        Please use com.github.kevinmcox.download.Tart going forward.
 
   - Processor: GitHubReleasesInfoProvider
     Arguments:
-      asset_regex: ^tart-%ARCH%.*?tar.gz$
+      asset_regex: ^tart.tar.gz$
       github_repo: "%GITHUB_REPO%"
       include_prereleases: "%INCLUDE_PRERELEASES%"
 

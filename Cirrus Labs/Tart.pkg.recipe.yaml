@@ -1,16 +1,20 @@
 Description: Downloads the latest version of Tart from Github; pulls apart the package and checks the binary's code 
-  signature. Specifiy an ARCH of "arm64" for Apple Silicon or "amd64" for Intel.
+  signature.
 Identifier: com.github.wegotoeleven-recipes.pkg.Tart
 MinimumVersion: '2.3'
 ParentRecipe: com.github.wegotoeleven-recipes.download.Tart
 
 Input:
   NAME: Tart
-  ARCH: arm64
   GITHUB_REPO: cirruslabs/tart
   INCLUDE_PRERELEASES: "false"
 
 Process:
+  - Processor: DeprecationWarning
+    Arguments:
+      message: >
+        ⚠️ The recipe "com.github.wegotoeleven-recipes.pkg.Tart" is deprecated.
+        Please use "com.github.kevinmcox.pkg.Tart" going forward.
 
   - Processor: Unarchiver
     Arguments:
@@ -58,7 +62,7 @@ Process:
   - Processor: PkgCreator
     Arguments:
       pkg_request:
-        pkgname: "%NAME%-%ARCH%-%version%"
+        pkgname: "%NAME%-%version%"
         pkgdir: "%RECIPE_CACHE_DIR%"
         id: com.github.cirruslabs.tart-app
         options: purge_ds_store
