@@ -136,7 +136,6 @@ Process:
     Arguments:
       pkg_request:
         id: com.circonus.circonus-unified-agent
-        options: purge_ds_store
         pkgname: "%NAME%-%version%"
         pkgroot: "%pkgroot%/root"
         scripts: "%pkgroot%/scripts"
