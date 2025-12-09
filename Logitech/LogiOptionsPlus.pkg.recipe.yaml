@@ -2,7 +2,7 @@ Description: Downloads the latest version of the Logi Options+ installer app, an
   deploys the installer to /tmp in then installs the app silently.
 Identifier: com.github.wegotoeleven-recipes.pkg.LogiOptionsPlus
 MinimumVersion: '2.3'
-ParentRecipe: com.github.wegotoeleven-recipes.download.LogiOptionsPlus
+ParentRecipe: com.github.TekTekkers.download.logioptionsplus_installer
 
 Input:
   NAME: Logi OptionsPlus
