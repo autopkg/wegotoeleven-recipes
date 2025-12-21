@@ -7,10 +7,6 @@ Input:
   URL: https://download01.logi.com/web/ftp/pub/techsupport/optionsplus/logioptionsplus_installer.zip
 
 Process:
-  - Processor: DeprecationWarning
-    Arguments:
-      warning_message: Consider switching to the logioptionsplus_installer recipes in the TekTekkers-recipes repo. This recipe is deprecated and will be removed in the future.
-
   - Processor: URLDownloader
     Arguments:
       filename: "%NAME%.zip"
